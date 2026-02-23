@@ -1,0 +1,88 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="fa">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>مبدل تومان &harr; افغانی</title>
+	<style type="text/css">*{margin:0;padding:0;box-sizing:border-box;font-family: Vazirmatn, Tahoma, sans-serif;}
+body{
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#1e272e;
+padding:10px;
+}
+.card{
+width:100%; max-width:520px;
+background:#232f3f;
+padding:50px 30px 60px 30px;
+border-radius:20px;
+color:white;
+position:relative;
+display:flex; flex-direction:column; justify-content:center;
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+.title{text-align:center; font-size:24px; font-weight:bold; margin-top:40px; margin-bottom:20px;}
+.switchBtn{position:absolute; top:20px; left:20px; width:50px; height:50px; border-radius:50%; border:none; cursor:pointer; background:#2a88cc; color:white; font-size:20px; box-shadow:0 5px 15px rgba(0,136,204,0.4); transition:0.3s;}
+.switchBtn:hover{transform:rotate(180deg);}
+.hamburger{position:absolute; top:20px; right:20px; width:50px; height:50px; border-radius:50%; border:none; cursor:pointer; background:#2a88cc; font-size:28px; color:white; box-shadow:0 5px 15px rgba(0,136,204,0.4); display:flex; justify-content:center; align-items:center;}
+.menu{display:none; position:absolute; top:75px; right:20px; background:#2a384c; border-radius:15px; padding:10px 15px; min-width:200px; flex-direction:column; z-index:100;}
+.menu a, .menu button{display:block; text-align:center; color:white; text-decoration:none; padding:12px 20px; border-radius:20px; background:#2a88cc; margin-bottom:10px; font-weight:bold; transition:0.2s; border:none; cursor:pointer;}
+.menu a:hover, .menu button:hover{transform: scale(1.05);}
+.label{font-size:16px; margin-bottom:8px;}
+input{width:100%; padding:18px; border-radius:20px; border:none; background:#2e3b4f; color:white; font-size:20px; outline:none; margin-bottom:25px; transition:0.2s;}
+input:focus{background:#3a4a63;}
+.info{text-align:center; font-size:14px; opacity:0.7; margin-bottom:30px;}
+.resultBox{padding:20px; border-radius:20px; display:flex; justify-content:space-between; align-items:center; background:#2a88cc; font-weight:bold; font-size:20px; color:white;}
+.copyBtn{cursor:pointer; font-size:24px;}
+
+/* Modal ماشین حساب */
+.modal{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); justify-content:center; align-items:center; z-index:200;}
+.modal-content{background:#1f2a38; padding:20px; border-radius:20px; max-width:400px; width:90%; color:white; display:flex; flex-direction:column;}
+.calc-display{width:100%; padding:15px; border-radius:15px; background:#2e3b4f; margin-bottom:15px; font-size:24px; text-align:right; color:white;}
+.calc-buttons{display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
+.calc-buttons button{padding:20px; font-size:18px; border-radius:15px; border:none; cursor:pointer; background:#2a88cc; color:white; transition:0.2s;}
+.calc-buttons button:hover{background:#00bfff;}
+.closeModal{margin-top:15px; padding:12px; font-size:16px; border-radius:15px; background:red; color:white; cursor:pointer; border:none;}
+	</style>
+</head>
+<body dir="rtl">
+<div class="card"><button class="switchBtn" onclick="toggleMode()">⇄</button><button class="hamburger" onclick="toggleMenu()">☰</button>
+<div class="menu" id="menu"><a href="https://alanchand.com/currencies-price/afn" target="_blank">قیمت لحظه&zwnj; ای</a><button onclick="openCalculator()">ماشین&zwnj;حساب</button> <a href="https://t.me/mogomogo" target="_blank">تماس با ما</a></div>
+
+<div class="title">مبدل تومان &harr; افغانی</div>
+
+<div class="label" style="text-align:center; margin-bottom:10px;">نرخ امروز (۱٬۰۰۰٬۰۰۰ تومان چند افغانی؟)</div>
+<input id="rateInput" placeholder="مثلاً 380" type="text" />
+<div class="info">مبنای محاسبه: ۱٬۰۰۰٬۰۰۰ تومان</div>
+
+<div class="label" id="inputLabel">مبلغ به تومان</div>
+<input id="mainInput" placeholder="مثلاً 2,000,000" type="text" />
+<div class="resultBox"><span id="resultText">معادل افغانی: 0</span> <span class="copyBtn" onclick="copyResult()">📋</span></div>
+</div>
+<!-- Modal ماشین حساب -->
+
+<div class="modal" id="calcModal">
+<div class="modal-content"><input class="calc-display" id="calcDisplay" readonly="readonly" type="text" />
+<div class="calc-buttons"><button onclick="calcPress('7')">7</button><button onclick="calcPress('8')">8</button><button onclick="calcPress('9')">9</button><button onclick="calcPress('/')">&divide;</button><button onclick="calcPress('4')">4</button><button onclick="calcPress('5')">5</button><button onclick="calcPress('6')">6</button><button onclick="calcPress('*')">&times;</button><button onclick="calcPress('1')">1</button><button onclick="calcPress('2')">2</button><button onclick="calcPress('3')">3</button><button onclick="calcPress('-')">&minus;</button><button onclick="calcPress('0')">0</button><button onclick="calcPress('.')">.</button><button onclick="calcPress('=')">=</button><button onclick="calcPress('+')">+</button><button onclick="calcPress('C')">C</button></div>
+<button class="closeModal" onclick="closeCalculator()">بستن</button></div>
+</div>
+<script>
+const BASE_TOMAN = 1000000;
+let mode = "T2A";
+function persianToEnglishNumbers(str){const persian=['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];const english=['0','1','2','3','4','5','6','7','8','9'];let output='';for(let i=0;i<str.length;i++){const index=persian.indexOf(str[i]);output+=index>-1?english[index]:str[i];}return output;}
+function formatNumber(x){return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");}
+function unformatNumber(x){return x.replace(/,/g,'');}
+function saveRate(value){localStorage.setItem("exchangeRate", value);}
+function loadRate(){let saved = localStorage.getItem("exchangeRate"); if(saved){document.getElementById("rateInput").value = formatNumber(saved);}}
+function getRate(){let value = unformatNumber(document.getElementById("rateInput").value); return parseFloat(value);}
+document.getElementById("rateInput").addEventListener("input", function(e){let value = persianToEnglishNumbers(e.target.value); value = unformatNumber(value); if(!isNaN(value) && value !== ""){e.target.value = formatNumber(value); saveRate(value);} calculate();});
+document.getElementById("mainInput").addEventListener("input", function(e){e.target.value = persianToEnglishNumbers(e.target.value); calculate();});
+function toggleMode(){document.getElementById("mainInput").value=""; if(mode==="T2A"){mode="A2T"; document.getElementById("inputLabel").innerText="مبلغ به افغانی"; document.getElementById("resultText").innerText="معادل تومان: 0";}else{mode="T2A"; document.getElementById("inputLabel").innerText="مبلغ به تومان"; document.getElementById("resultText").innerText="معادل افغانی: 0";}}
+function calculate(){let input = unformatNumber(document.getElementById("mainInput").value); let rate = getRate(); if(!isNaN(input) && input!=="" && rate){document.getElementById("mainInput").value=formatNumber(input); let result; if(mode==="T2A"){result=(input*rate)/BASE_TOMAN; document.getElementById("resultText").innerText="معادل افغانی: "+formatNumber(result.toFixed(2));}else{result=(input*BASE_TOMAN)/rate; document.getElementById("resultText").innerText="معادل تومان: "+formatNumber(result.toFixed(0));}}}
+function copyResult(){let text=document.getElementById("resultText").innerText; let numberOnly=text.split(": ")[1]; navigator.clipboard.writeText(numberOnly); document.getElementById("resultText").innerText="کپی شد ✓"; setTimeout(()=>calculate(),1200);}
+function toggleMenu(){const menu=document.getElementById("menu"); if(menu.style.display==="flex"){menu.style.display="none";} else {menu.style.display="flex"; menu.style.flexDirection="column";}}
+document.querySelectorAll("#menu a, #menu button").forEach(item=>{item.addEventListener("click",function(){document.getElementById("menu").style.display="none";});});
+let calcExp=""; function openCalculator(){document.getElementById("calcModal").style.display="flex"; calcExp=""; document.getElementById("calcDisplay").value="";} function closeCalculator(){document.getElementById("calcModal").style.display="none";} function calcPress(val){if(val==="="){try{calcExp=eval(calcExp);}catch(e){calcExp="Error";}document.getElementById("calcDisplay").value=calcExp;calcExp="";}else if(val==="C"){calcExp=""; document.getElementById("calcDisplay").value="";}else{calcExp+=val; document.getElementById("calcDisplay").value=calcExp;}}
+loadRate();
+</script></body>
+</html>
